@@ -2,7 +2,7 @@ using UnityEngine;
 
 // The most basic mesh is a triangle.
 // The most basic triangle is made of 3 vertices, the order in which they are read and the direction in which it is facing.
-// A mesh can be made out of more than one triangle. To define the shape of such a mesh we need to tell unity in which
+// The integer array tells unity what vertices to connect. Unity takes every 3 indices to form triangles.
 
 namespace Learning_Meshes_1
 {
