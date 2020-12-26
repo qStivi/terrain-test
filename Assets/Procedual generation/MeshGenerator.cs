@@ -21,14 +21,7 @@ namespace Procedual_generation
             CreateShape();
             UpdateShape();
         }
-
-        private void OnDrawGizmos()
-        {
-            if (_vertices == null) return;
-
-            foreach (var v in _vertices) Gizmos.DrawSphere(v, .1f);
-        }
-
+        
         private void CreateShape()
         {
             _vertices = new Vector3[(xSize + 1) * (zSize + 1)];
@@ -36,8 +29,33 @@ namespace Procedual_generation
             for (int i = 0, z = 0; z <= zSize; z++)
             for (var x = 0; x <= xSize; x++)
             {
-                _vertices[i] = new Vector3(x, 0, z);
+                var y = Mathf.PerlinNoise(x * .3f, z * .3f) * 2f;
+                _vertices[i] = new Vector3(x, y, z);
                 i++;
+            }
+
+            _triangles = new int[xSize * zSize * 6];
+
+            var vert = 0;
+            var tris = 0;
+
+            for (var z = 0; z < zSize; z++)
+            {
+                for (var x = 0; x < xSize; x++)
+                {
+                    _triangles[tris + 0] = vert + 0;
+                    _triangles[tris + 1] = vert + xSize + 1;
+                    _triangles[tris + 2] = vert + 1;
+
+                    _triangles[tris + 3] = vert + 1;
+                    _triangles[tris + 4] = vert + xSize + 1;
+                    _triangles[tris + 5] = vert + xSize + 2;
+
+                    vert++;
+                    tris += 6;
+                }
+
+                vert++;
             }
         }
 
