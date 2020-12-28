@@ -46,8 +46,8 @@ namespace Procedural_Generation_2._0
                     var sampleY = (y - halfHeight) / scale * frequency + octaveOffset[o].y;
 
                     // calculate and store noiseHeight.
-                    var perlinValue = Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1;  // Calculate perlinValue for our current "pixel". Then change range to -1 to 1 for more interesting values.
-                                                                                        // Mathf.PerlinNoise() returns a value between 0 and 1 by default.
+                    var perlinValue = Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1; // Calculate perlinValue for our current "pixel". Then change range to -1 to 1 for more interesting values.
+                    // Mathf.PerlinNoise() returns a value between 0 and 1 by default.
                     noiseHeight += perlinValue * amplitude; // Apply amplitude.
 
                     amplitude *= persistence;
