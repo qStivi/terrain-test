@@ -10,10 +10,10 @@ namespace Procedural_Generation_2._0
         {
             var noiseMap = new float[mapWidth, mapHeight];
 
-            // Create a pseudo random values while also concerning a custom offset.
-            // With this we have a random offset which is decided by a seed and a manuel offset. We have randomness by offsetting.
+            // Create a pseudo random values while also using a custom offset.
+            // With this we have a random offset which is decided by a seed and a manuel offset.
             var prng = new Random(seed); // Create new instance of random generator with seed so it works like minecraft seeds.
-            var octaveOffset = new Vector2[octaves];
+            var octaveOffset = new Vector2[octaves]; // Octaves are multiple stacked layers of noise with different resolutions
             for (var o = 0; o < octaves; o++)
             {
                 // Larger ranges tend to produce repeating values. 
@@ -41,11 +41,11 @@ namespace Procedural_Generation_2._0
 
                 for (var o = 0; o < octaves; o++)
                 {
-                    // apply scale factor and frequency.
+                    // apply scale factor, frequency and random offset.
                     var sampleX = (x - halfWidth) / scale * frequency + octaveOffset[o].x;
                     var sampleY = (y - halfHeight) / scale * frequency + octaveOffset[o].y;
 
-                    // calculate and store noiseHeight.
+                    // calculate noiseHeight.
                     var perlinValue = Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1; // Calculate perlinValue for our current "pixel". Then change range to -1 to 1 for more interesting values.
                     // Mathf.PerlinNoise() returns a value between 0 and 1 by default.
                     noiseHeight += perlinValue * amplitude; // Apply amplitude.

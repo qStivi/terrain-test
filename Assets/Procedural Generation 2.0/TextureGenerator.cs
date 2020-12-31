@@ -14,7 +14,7 @@ namespace Procedural_Generation_2._0
 
         public static Texture2D TextureFromHeightMap(float[,] heightMap)
         {
-            // Create texture with resolution of generated noise map.
+            // Create texture with resolution of given height map.
             var width = heightMap.GetLength(0);
             var height = heightMap.GetLength(1);
 
