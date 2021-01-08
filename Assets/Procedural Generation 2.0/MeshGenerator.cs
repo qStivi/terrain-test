@@ -4,8 +4,9 @@ namespace Procedural_Generation_2._0
 {
     public static class MeshGenerator
     {
-        public static MeshData GenerateTerrainMesh(float[,] heightMap, float heightMultiplier, AnimationCurve heightCurve, int levelOfDetail)
+        public static MeshData GenerateTerrainMesh(float[,] heightMap, float heightMultiplier, AnimationCurve _heightCurve, int levelOfDetail)
         {
+            var heightCurve = new AnimationCurve(_heightCurve.keys);
             var width = heightMap.GetLength(0);
             var height = heightMap.GetLength(1);
             var topLeftX = (width - 1) / -2f;

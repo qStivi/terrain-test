@@ -12,9 +12,9 @@ namespace Procedural_Generation_2._0
 
             if (DrawDefaultInspector())
                 if (mapGenerator.autoUpdate)
-                    mapGenerator.GenerateMap();
+                    mapGenerator.DrawMapInEditor();
 
-            if (GUILayout.Button("Generate")) mapGenerator.GenerateMap();
+            if (GUILayout.Button("Generate")) mapGenerator.DrawMapInEditor();
         }
     }
 }
