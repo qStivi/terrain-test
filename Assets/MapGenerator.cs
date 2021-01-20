@@ -15,7 +15,7 @@ public class MapGenerator : MonoBehaviour
         FalloffMap
     }
 
-    public const int mapChunkSize = 241;
+    public const int mapChunkSize = 239;
     public DrawMode drawMode;
 
     public Noise.NormalizeMode normalizeMode;
@@ -133,7 +133,7 @@ public class MapGenerator : MonoBehaviour
     private MapData GenerateMapData(Vector2 centre)
     {
         if (randomSeed) seed = new Random().Next(int.MinValue, int.MaxValue); // Set random seed if wanted.
-        var noiseMap = Noise.GenerateNoiseMap(mapChunkSize, mapChunkSize, noiseScale, seed, octaves, persistence, lacunarity, centre + offset, normalizeMode); // Generate noise map.
+        var noiseMap = Noise.GenerateNoiseMap(mapChunkSize + 2, mapChunkSize + 2, noiseScale, seed, octaves, persistence, lacunarity, centre + offset, normalizeMode); // Generate noise map.
 
         var colorMap = new Color[mapChunkSize * mapChunkSize];
 

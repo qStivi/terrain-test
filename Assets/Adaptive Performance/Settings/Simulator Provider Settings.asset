@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Logging: 1
   m_AutomaticPerformanceModeEnabled: 1
-  m_StatsLoggingFrequencyInFrames: 50
+  m_StatsLoggingFrequencyInFrames: 500
   m_IndexerSettings:
     m_Active: 1
     m_ThermalActionDelay: 10
