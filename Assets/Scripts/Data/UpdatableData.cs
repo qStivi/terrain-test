@@ -7,8 +7,11 @@ namespace Data
     public class UpdatableData : ScriptableObject
     {
         public bool autoUpdate;
+        public event Action OnValuesUpdated;
 
-        private void OnValidate()
+#if UNITY_EDITOR
+
+        protected virtual void OnValidate()
         {
             if (autoUpdate)
             {
@@ -16,12 +19,13 @@ namespace Data
             }
         }
 
-        public event Action OnValuesUpdated;
 
         public void NotifyOfUpdatedValues()
         {
             EditorApplication.update -= NotifyOfUpdatedValues;
             if (OnValuesUpdated != null) OnValuesUpdated();
         }
+#endif
+        
     }
 }
