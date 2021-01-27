@@ -3,7 +3,12 @@ guid: 970264f3e9d85644b8b0345abddc4681
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - meshSettings: {fileID: 11400000, guid: eaf9672f076b1bd42ae9422204272744, type: 2}
+  - heightMapSettings: {fileID: 11400000, guid: 75428a1b9fd49414e8fe41a522605ab5, type: 2}
+  - textureSettings: {fileID: 11400000, guid: d0e8fac537136294ab793b24c81b9d88, type: 2}
+  - viewer: {instanceID: 0}
+  - mapMaterial: {fileID: 2100000, guid: 4947085c1318d994d928ceb513988d02, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
