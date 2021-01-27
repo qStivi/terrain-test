@@ -13,19 +13,15 @@ namespace Data
 
         protected virtual void OnValidate()
         {
-            if (autoUpdate)
-            {
-                EditorApplication.update += NotifyOfUpdatedValues;
-            }
+            if (autoUpdate) EditorApplication.update += NotifyOfUpdatedValues;
         }
 
 
         public void NotifyOfUpdatedValues()
         {
             EditorApplication.update -= NotifyOfUpdatedValues;
-            if (OnValuesUpdated != null) OnValuesUpdated();
+            OnValuesUpdated?.Invoke();
         }
 #endif
-        
     }
 }

@@ -1,6 +1,6 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace Data
@@ -8,29 +8,38 @@ namespace Data
     [CreateAssetMenu]
     public class TextureData : UpdatableData
     {
-        private const int textureSize = 512;
-        private const TextureFormat textureFormat = TextureFormat.RGB565;
+        private const int TextureSize = 512;
+        private const TextureFormat TextureFormat = UnityEngine.TextureFormat.RGB565;
+        private static readonly int LayerCount = Shader.PropertyToID("layer_count");
+        private static readonly int BaseColors = Shader.PropertyToID("base_colors");
+        private static readonly int BaseStartHeights = Shader.PropertyToID("base_start_heights");
+        private static readonly int BaseBlends = Shader.PropertyToID("base_blends");
+        private static readonly int BaseColorStrength = Shader.PropertyToID("base_color_strength");
+        private static readonly int BaseTextureScales = Shader.PropertyToID("base_texture_scales");
+        private static readonly int BaseTextures = Shader.PropertyToID("baseTextures");
+        private static readonly int MINHeight = Shader.PropertyToID("min_height");
+        private static readonly int MAXHeight = Shader.PropertyToID("max_height");
 
         public Layer[] layers;
 
-        float savedMaxHeight;
+        private float _savedMaxHeight;
 
-        float savedMinHeight;
+        private float _savedMinHeight;
 
         public void ApplyToMaterial(Material material)
         {
             ReapplyShader(material);
 
-            material.SetInt("layerCount", layers.Length);
-            material.SetColorArray("baseColors", layers.Select(x => x.tint).ToArray());
-            material.SetFloatArray("baseStartHeights", layers.Select(x => x.startHeight).ToArray());
-            material.SetFloatArray("baseBlends", layers.Select(x => x.blendStrength).ToArray());
-            material.SetFloatArray("baseColorStrength", layers.Select(x => x.tintStrength).ToArray());
-            material.SetFloatArray("baseTextureScales", layers.Select(x => x.textureScale).ToArray());
-            var testuresArray = GenerateTextureArray(layers.Select(x => x.texture).ToArray());
-            material.SetTexture("baseTextures", testuresArray);
+            material.SetInt(LayerCount, layers.Length);
+            material.SetColorArray(BaseColors, layers.Select(x => x.tint).ToArray());
+            material.SetFloatArray(BaseStartHeights, layers.Select(x => x.startHeight).ToArray());
+            material.SetFloatArray(BaseBlends, layers.Select(x => x.blendStrength).ToArray());
+            material.SetFloatArray(BaseColorStrength, layers.Select(x => x.tintStrength).ToArray());
+            material.SetFloatArray(BaseTextureScales, layers.Select(x => x.textureScale).ToArray());
+            var texturesArray = GenerateTextureArray(layers.Select(x => x.texture).ToArray());
+            material.SetTexture(BaseTextures, texturesArray);
 
-            UpdateMeshHeights(material, savedMinHeight, savedMaxHeight);
+            UpdateMeshHeights(material, _savedMinHeight, _savedMaxHeight);
         }
 
         private static void ReapplyShader(Material material)
@@ -42,22 +51,19 @@ namespace Data
 
         public void UpdateMeshHeights(Material material, float minHeight, float maxHeight)
         {
-            savedMaxHeight = maxHeight;
-            savedMinHeight = minHeight;
+            _savedMaxHeight = maxHeight;
+            _savedMinHeight = minHeight;
 
-            material.SetFloat("minHeight", minHeight);
-            material.SetFloat("maxHeight", maxHeight);
+            material.SetFloat(MINHeight, minHeight);
+            material.SetFloat(MAXHeight, maxHeight);
         }
 
-        Texture2DArray GenerateTextureArray(Texture2D[] textures)
+        private static Texture2DArray GenerateTextureArray(IReadOnlyList<Texture2D> textures)
         {
-            var texttureArray = new Texture2DArray(textureSize, textureSize, textures.Length, textureFormat, true);
-            for (var i = 0; i < textures.Length; i++)
-            {
-                texttureArray.SetPixels(textures[i].GetPixels(), i);
-            }
-            texttureArray.Apply();
-            return texttureArray;
+            var textureArray = new Texture2DArray(TextureSize, TextureSize, textures.Count, TextureFormat, true);
+            for (var i = 0; i < textures.Count; i++) textureArray.SetPixels(textures[i].GetPixels(), i);
+            textureArray.Apply();
+            return textureArray;
         }
     }
 
@@ -66,12 +72,13 @@ namespace Data
     {
         public Texture2D texture;
         public Color tint;
-        [Range(0,1)]
-        public float tintStrength;
-        [Range(0,1)]
-        public float startHeight;
-        [Range(0,1)]
-        public float blendStrength;
+
+        [Range(0, 1)] public float tintStrength;
+
+        [Range(0, 1)] public float startHeight;
+
+        [Range(0, 1)] public float blendStrength;
+
         public float textureScale;
     }
 }

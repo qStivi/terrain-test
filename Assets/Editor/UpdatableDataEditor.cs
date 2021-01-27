@@ -13,11 +13,9 @@ namespace Editor
 
             var data = (UpdatableData) target;
 
-            if (GUILayout.Button("Update"))
-            {
-                data.NotifyOfUpdatedValues();
-                EditorUtility.SetDirty(target);
-            }
+            if (!GUILayout.Button("Update")) return;
+            data.NotifyOfUpdatedValues();
+            EditorUtility.SetDirty(target);
         }
     }
 }

@@ -17,21 +17,21 @@ Shader "Custom/Terrain"
         // Use shader model 3.0 target, to get nicer looking lighting
         #pragma target 3.0
 
-        const static  int maxLayerCount = 8;
+        const static  int max_layer_count = 8;
         const static float epsilon = 1E-4;
 
-        int layerCount;
-        float3 baseColors[maxLayerCount];
-        float baseStartHeights[maxLayerCount];
-        float baseBlends[maxLayerCount];
-        float baseColorStrength[maxLayerCount];
-        float baseTextureScales[maxLayerCount];
+        int layer_count;
+        float3 base_colors[max_layer_count];
+        float base_start_heights[max_layer_count];
+        float base_blends[max_layer_count];
+        float base_color_strength[max_layer_count];
+        float base_texture_scales[max_layer_count];
         
-        float minHeight;
-        float maxHeight;
+        float min_height;
+        float max_height;
 
-        sampler2D testTexture;
-        float testScale;
+        sampler2D test_texture;
+        float test_scale;
 
         UNITY_DECLARE_TEX2DARRAY(baseTextures);
 
@@ -41,33 +41,33 @@ Shader "Custom/Terrain"
             float3 worldNormal;
         };
 
-        float inverseLerp(float a, float b, float value)
+        float inverse_lerp(float a, float b, float value)
         {
             return saturate((value-a)/(b-a));
         }
 
-        float3 triplanar(float3 worldPos, float scale, float3 blendAxes, int textureIndex)
+        float3 tri_planar(float3 worldPos, float scale, float3 blendAxes, int textureIndex)
         {
-            float3 scaledWorldPos = worldPos / scale;
-            float3 xProjection = UNITY_SAMPLE_TEX2DARRAY(baseTextures, float3(scaledWorldPos.y, scaledWorldPos.z, textureIndex)) * blendAxes.x;
-            float3 yProjection = UNITY_SAMPLE_TEX2DARRAY(baseTextures, float3(scaledWorldPos.x, scaledWorldPos.z, textureIndex)) * blendAxes.y;
-            float3 zProjection = UNITY_SAMPLE_TEX2DARRAY(baseTextures, float3(scaledWorldPos.x, scaledWorldPos.y, textureIndex)) * blendAxes.z;
-            return xProjection + yProjection + zProjection;
+            float3 scaled_world_pos = worldPos / scale;
+            const float3 x_projection = UNITY_SAMPLE_TEX2DARRAY(baseTextures, float3(scaled_world_pos.y, scaled_world_pos.z, textureIndex)) * blendAxes.x;
+            const float3 y_projection = UNITY_SAMPLE_TEX2DARRAY(baseTextures, float3(scaled_world_pos.x, scaled_world_pos.z, textureIndex)) * blendAxes.y;
+            const float3 z_projection = UNITY_SAMPLE_TEX2DARRAY(baseTextures, float3(scaled_world_pos.x, scaled_world_pos.y, textureIndex)) * blendAxes.z;
+            return x_projection + y_projection + z_projection;
         }
         
         void surf (Input IN, inout SurfaceOutputStandard o)
         {
-            float heightPercent = inverseLerp(minHeight, maxHeight, IN.worldPos.y);
-            float3 blendAxes = abs(IN.worldNormal);
-            blendAxes /= blendAxes.x + blendAxes.y + blendAxes.z;
-            for (int i = 0; i < layerCount; i++)
+            const float height_percent = inverse_lerp(min_height, max_height, IN.worldPos.y);
+            float3 blend_axes = abs(IN.worldNormal);
+            blend_axes /= blend_axes.x + blend_axes.y + blend_axes.z;
+            for (int i = 0; i < layer_count; i++)
             {
-                float drawStrength = inverseLerp(-baseBlends[i]/2 - epsilon, baseBlends[i]/2, heightPercent -baseStartHeights[i]);
+                const float draw_strength = inverse_lerp(-base_blends[i]/2 - epsilon, base_blends[i]/2, height_percent -base_start_heights[i]);
 
-                float3 baseColor = baseColors[i] * baseColorStrength[i];
-                float3 textureColor = triplanar(IN.worldPos, baseTextureScales[i], blendAxes, i) * (1-baseColorStrength[i]);
+                const float3 base_color = base_colors[i] * base_color_strength[i];
+                const float3 texture_color = tri_planar(IN.worldPos, base_texture_scales[i], blend_axes, i) * (1-base_color_strength[i]);
                 
-                o.Albedo = o.Albedo * (1-drawStrength) + (baseColor+textureColor) * drawStrength;
+                o.Albedo = o.Albedo * (1-draw_strength) + (base_color+texture_color) * draw_strength;
             }
         }
         ENDCG

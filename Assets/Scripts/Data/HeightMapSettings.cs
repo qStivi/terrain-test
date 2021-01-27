@@ -6,29 +6,15 @@ namespace Data
     public class HeightMapSettings : UpdatableData
     {
         public NoiseSettings noiseSettings;
-        
+
         public bool usingFalloff;
 
         public float heightMultiplier = 20;
         public AnimationCurve heightCurve;
 
-        public float minHeight
-        {
-            get
-            {
-                var height = heightMultiplier * heightCurve.Evaluate(0);
-                return height;
-            }
-        }
+        public float MINHeight => heightMultiplier * heightCurve.Evaluate(0);
 
-        public float maxHeight
-        {
-            get
-            {
-                var height = heightMultiplier * heightCurve.Evaluate(1);
-                return height;
-            }
-        }
+        public float MAXHeight => heightMultiplier * heightCurve.Evaluate(1);
 
 #if UNITY_EDITOR
         protected override void OnValidate()
@@ -37,6 +23,5 @@ namespace Data
             base.OnValidate();
         }
 #endif
-
     }
 }

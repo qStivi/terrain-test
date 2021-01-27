@@ -1,59 +1,65 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
 public class ThreadedDataRequester : MonoBehaviour
 {
-    private static ThreadedDataRequester instance;
-    private readonly Queue<ThreadInfo> dataQueue = new Queue<ThreadInfo>();
+    private static ThreadedDataRequester _instance;
+    private readonly Queue<ThreadInfo> _dataQueue = new Queue<ThreadInfo>();
 
 
     private void Awake()
     {
-        instance = FindObjectOfType<ThreadedDataRequester>();
+        _instance = FindObjectOfType<ThreadedDataRequester>();
     }
 
 
     private void Update()
     {
-        if (dataQueue.Count > 0)
-            for (var i = 0; i < dataQueue.Count; i++)
+        // lock (_dataQueue)
+        // {
+            if (_dataQueue.Count <= 0) return;
+        // }
+
+        // lock (_dataQueue)
+        // {
+            for (var i = 0; i < _dataQueue.Count; i++)
             {
-                var threadInfo = dataQueue.Dequeue();
-                threadInfo.callback(threadInfo.parameter);
+                var threadInfo = _dataQueue.Dequeue();
+                threadInfo.Callback(threadInfo.Parameter);
             }
+        // }
     }
+
     public static void RequestData(Func<object> generateData, Action<object> callback)
     {
         void ThreadStart()
         {
-            instance.DataThread(generateData, callback);
+            _instance.DataThread(generateData, callback);
         }
 
         new Thread(ThreadStart).Start();
     }
 
-    private void DataThread(Func<object> geneateData, Action<object> callback)
+    private void DataThread(Func<object> generateData, Action<object> callback)
     {
-        var data = geneateData();
-        lock (dataQueue)
+        var data = generateData();
+        lock (_dataQueue)
         {
-            dataQueue.Enqueue(new ThreadInfo(callback, data));
+            _dataQueue.Enqueue(new ThreadInfo(callback, data));
         }
     }
-    
-    private struct ThreadInfo
+
+    private readonly struct ThreadInfo
     {
         public ThreadInfo(Action<object> callback, object parameter)
         {
-            this.callback = callback;
-            this.parameter = parameter;
+            Callback = callback;
+            Parameter = parameter;
         }
 
-        public readonly Action<object> callback;
-        public readonly object parameter;
+        public readonly Action<object> Callback;
+        public readonly object Parameter;
     }
-
 }

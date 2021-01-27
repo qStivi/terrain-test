@@ -6,17 +6,15 @@ public static class Noise
 {
     public enum NormalizeMode
     {
-        Local, Global
+        Local,
+        Global
     }
-        
+
     // This method creates a two dimensional float array and assigns pseudo random values to it using perlin noise.
     public static float[,] GenerateNoiseMap(int mapWidth, int mapHeight, NoiseSettings settings, Vector2 sampleCentre)
     {
-        if (settings.randomSeed)
-        {
-            settings.seed = new Random().Next(Int32.MinValue, Int32.MaxValue);
-        }
-        
+        if (settings.randomSeed) settings.seed = new Random().Next(int.MinValue, int.MaxValue);
+
         // This is our "main variable". An 2d array of height values which can be represented as a map.
         // For each pair of values or coordinates a height value will be calculated using perlin noise, random offsets, octaves, a seed, a persistence value and a lacunarity value.
         var noiseMap = new float[mapWidth, mapHeight];
@@ -28,8 +26,7 @@ public static class Noise
 
         var maxPossibleHeight = 0f;
         var amplitude = 1f; // This will be changed every octave using the persistence value.
-        var frequency = 1f; // This will be changed every octave using the lacunarity value.
-            
+
         for (var i = 0; i < settings.octaves; i++)
         {
             // Larger ranges tend to produce repeating values. 
@@ -53,7 +50,7 @@ public static class Noise
         for (var x = 0; x < mapWidth; x++)
         {
             amplitude = 1f; // This will be changed every octave using the persistence value.
-            frequency = 1f; // This will be changed every octave using the lacunarity value.
+            var frequency = 1f; // This will be changed every octave using the lacunarity value.
             var noiseHeight = 0f; // Current height value
 
             for (var i = 0; i < settings.octaves; i++)
@@ -82,44 +79,42 @@ public static class Noise
 
             if (settings.normalizeMode == NormalizeMode.Global)
             {
-                var normalizedHeight = (noiseMap[x, y] + 1) / (maxPossibleHeight)/0.9f;
+                var normalizedHeight = (noiseMap[x, y] + 1) / maxPossibleHeight / 0.9f;
                 noiseMap[x, y] = Mathf.Clamp(normalizedHeight, 0, int.MaxValue);
-                
             }
-
         }
 
-            if (settings.normalizeMode == NormalizeMode.Local)
-            {
-                // Normalize noise map. (Fit values to range 0 to 1)
-                for (var y = 0; y < mapHeight; y++)
-                for (var x = 0; x < mapWidth; x++)
-                        noiseMap[x, y] = Mathf.InverseLerp(minLocalNoiseHeight, maxLocalNoiseHeight, noiseMap[x, y]);
-            }
+        if (settings.normalizeMode == NormalizeMode.Local)
+            // Normalize noise map. (Fit values to range 0 to 1)
+            for (var y = 0; y < mapHeight; y++)
+            for (var x = 0; x < mapWidth; x++)
+                noiseMap[x, y] = Mathf.InverseLerp(minLocalNoiseHeight, maxLocalNoiseHeight, noiseMap[x, y]);
 
         return noiseMap;
     }
 }
+
 [Serializable]
-public class NoiseSettings {
-public Noise.NormalizeMode normalizeMode;
-
-public float scale = 25f;
-
-[Range(1, 30)] public int octaves = 4;
-[Range(0, 1)] public float persistence = 0.5f;
-[Min(1)] public float lacunarity = 2f;
-
-public int seed;
-public Vector2 offset;
-
-public bool randomSeed;
-
-public void ValidateValues()
+public class NoiseSettings
 {
-    scale = Mathf.Max(scale, 0.01f);
-    octaves = Mathf.Max(octaves, 1);
-    lacunarity = Mathf.Max(lacunarity, 1);
-    persistence = Mathf.Clamp01(persistence);
-}
+    public Noise.NormalizeMode normalizeMode;
+
+    public float scale = 25f;
+
+    [Range(1, 30)] public int octaves = 4;
+    [Range(0, 1)] public float persistence = 0.5f;
+    [Min(1)] public float lacunarity = 2f;
+
+    public int seed;
+    public Vector2 offset;
+
+    public bool randomSeed;
+
+    public void ValidateValues()
+    {
+        scale = Mathf.Max(scale, 0.01f);
+        octaves = Mathf.Max(octaves, 1);
+        lacunarity = Mathf.Max(lacunarity, 1);
+        persistence = Mathf.Clamp01(persistence);
+    }
 }
